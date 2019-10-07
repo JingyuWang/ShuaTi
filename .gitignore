@@ -3,5 +3,6 @@
 ################################################################################
 
 /RoundOne/RoundOne/obj
-/RoundOne/.vs/RoundOne/v16
+/RoundOne/.vs
 /.vs
+/RoundOne/RoundOne/bin
