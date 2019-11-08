@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using RoundOne.Zhongdeng;
 
 namespace RoundOne
 {
@@ -12,72 +14,52 @@ namespace RoundOne
     {
         static void Main(string[] args)
         {
-            char[][] board = new char[][]
-            {
-                new char[] { '1', '1' ,'0', '0', '0'},
-                new char[] { '1', '1', '0', '0', '0' },
-                new char[] { '0', '0', '1', '0', '0' },
-                new char[] { '0', '0', '0', '1', '1' }
-            };
-            Queue<Index> queue = new Queue<Index>();
-            int count = 0;
-            for(int i = 0; i < board.Length; i++)
-            {
-                for (int j=0; j < board[i].Length; j++)
-                {
-                    if (board[i][j] == '1')
-                    {
-                        Console.WriteLine("k is {0}: l is {1}", i, j);
-                        count++;
-                        Index po = new Index(i, j);
-                        queue.Enqueue(po);
-                        while (queue.Count > 0)
-                        {
-                            Index temp = queue.Dequeue();
-                            //Console.WriteLine("Queue length is {0}", queue.Count);
-                            int k = temp.X, l = temp.Y;
-                            //Console.WriteLine("k is {0}: l is {1}", k, l);
-                            board[k][l] = '2';
-                            //Console.WriteLine(board[k][l]);
+            string inp = "3[a]";
+            Console.WriteLine(DecodeString(inp));
 
-                            if (k + 1 < board.Length && board[k + 1][l] == '1')
-                            {
-                                queue.Enqueue(new Index(k + 1, l));
-                                Console.WriteLine("#");
-                            }                                
-                            if (l + 1 < board[k].Length && board[k][l + 1] == '1') { 
-
-                                queue.Enqueue(new Index(k, l + 1));
-                                Console.WriteLine("##");
-                            }
-                            if (k - 1 >= 0 && board[k-1][l] == '1')
-                            {
-                                queue.Enqueue(new Index(k - 1, l));
-                                Console.WriteLine("###");
-                            }
-                                
-                            if (l - 1 >= 0 && board[k][l - 1] == '1')
-                            {
-                                queue.Enqueue(new Index(k, l - 1));
-                                Console.WriteLine("####");
-                            }
-                               
-                            Thread.Sleep(300);
-                        }
-                    }
-                }
-            }
-
-            foreach(var item in board)
-            {
-                foreach(var s in item)
-                {
-                    Console.Write(s);
-                }
-                Console.WriteLine();
-            }
-            Console.WriteLine("Total island is {0}", count);
         }
+        //-------------------------------------------------------
+        public static string DecodeString(string s)
+        {
+            return helper(1, s);
+        }
+        public static string helper(int n, string sub)
+        {
+            if (!sub.Contains('['))
+                return repeat(n, sub);
+            int start = -1;//number start index  ab2[d],  2[d]
+            int end = sub.IndexOf('[');// index of '['
+
+            string pre = sub.Substring(0, end);//ab2[d] or 2[d]
+            string rest = sub.Substring(end + 1, sub.Length - end - 2);
+
+            for (int i = 0; i < pre.Length; i++)
+            {
+                if (Char.IsDigit(pre[i]))
+                {
+                    start = i;
+                    break;
+                }
+            }
+
+            if (start != -1)
+            {//means have head
+                string head = pre.Substring(0, start);
+                int num = Convert.ToInt32(pre.Substring(start, end - start));
+                return head + helper(num, rest);
+            }
+            else
+            {
+                int num = Convert.ToInt32(pre);
+                return helper(num, rest);
+            }
+
+        }
+        public static string repeat(int n, string s)
+        {
+            return new StringBuilder(s.Length * n).AppendJoin(s, new string[n + 1]).ToString();
+        }
+        //-------------------------------------------------------
         public class Index
         {
             public int X { get; set; }

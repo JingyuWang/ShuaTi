@@ -18,32 +18,21 @@ namespace Solution
                         count++;
                         Queue<Index> q = new Queue<Index>();
                         q.Enqueue(new Index(i, j));
+                        grid[i][j] = '0';
                         while (q.Count > 0)
                         {
                             Index temp = q.Dequeue();
                             int k = temp.X, l = temp.Y;
-                            grid[k][l] = '2';
-                            if (k + 1 < grid.Length && grid[k + 1][l] == '1')
+                            (int,int)[] direction = {(1, 0), (0, 1), (-1, 0), (0, -1)};
+                            foreach(var item in direction)
                             {
-                                q.Enqueue(new Index(k + 1, l));
-                                Console.WriteLine("#");
-                            }
-                            if (l + 1 < grid[k].Length && grid[k][l + 1] == '1')
-                            {
-
-                                q.Enqueue(new Index(k, l + 1));
-                                Console.WriteLine("##");
-                            }
-                            if (k - 1 >= 0 && grid[k - 1][l] == '1')
-                            {
-                                q.Enqueue(new Index(k - 1, l));
-                                Console.WriteLine("###");
-                            }
-
-                            if (l - 1 >= 0 && grid[k][l - 1] == '1')
-                            {
-                                q.Enqueue(new Index(k, l - 1));
-                                Console.WriteLine("####");
+                                if(Inbond(grid, item.Item1, item.Item2))
+                                {
+                                    int NextI = i + item.Item1;
+                                    int NextJ = j + item.Item2;
+                                    q.Enqueue(new Index(NextI, NextJ));
+                                    grid[NextI][NextJ] = '0';
+                                }
                             }
                         }
                     }
@@ -53,6 +42,12 @@ namespace Solution
             return count;
         }
 
+        public static bool Inbond(char[][] grid, int a, int b)
+        {
+            int n = grid.Length;
+            int m = grid[0].Length;
+            return 0 <= a && a < n && 0 <= b && b < m && grid[a][b] == '1';
+        }
         public class Index
         {
             public int X { get; set; }
